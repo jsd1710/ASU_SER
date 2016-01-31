@@ -4,6 +4,9 @@ import java.io.*;
 
 class SockClient 
 {
+	static BufferedReader reader;
+	static PrintWriter pw;
+	
      public static void main (String args[]) throws Exception 
      {
         Socket          sock = null;
@@ -16,10 +19,12 @@ class SockClient
             out = sock.getOutputStream();
             in = sock.getInputStream();
 
-            PrintWriter pw = new PrintWriter(out, true);
+            pw = new PrintWriter(out, true);
             String output_text = args[0];
             pw.println(output_text);
-            int result = in.read();
+            
+            reader = new BufferedReader(new InputStreamReader(in));
+            String result = reader.readLine();
             System.out.println("Result is " + result);
         } 
         catch (Exception e) 

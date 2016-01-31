@@ -8,6 +8,7 @@ class SockServer
 {
     static AtomicInteger total = new AtomicInteger(0);   
     static BufferedReader reader;
+    static PrintWriter pw;
     
     static String[] parseInput(InputStream inputStream) throws IOException
     {
@@ -28,13 +29,12 @@ class SockServer
     		result = 0;
     		if (input.equals("reset"))
 			{
-    			System.out.println("Total is reset.");
     			total.set(0);
-    			System.out.println(total);
+    			System.out.println("Total is reset.");
 			}
     		else
     		{
-    			System.out.println(input + " is not an accepted input.");
+    			System.out.println("'" + input + "' is not an accepted input.");
     		}
     	}
     	
@@ -69,11 +69,12 @@ class SockServer
                 
                 System.out.println("Server received " + Arrays.toString(arguments));
                 	
-                Thread.sleep(1000);
+                //Thread.sleep(1000);
                 total.addAndGet(addInput(arguments[0]));
             	System.out.println("Total is: " + total);
 
-                out.write(total.get());
+                pw = new PrintWriter(out, true);
+                pw.println(total.get());
                 out.flush();
             } 
             catch (Exception e) 
