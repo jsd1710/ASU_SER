@@ -20,7 +20,19 @@ class SockClient
             in = sock.getInputStream();
 
             pw = new PrintWriter(out, true);
-            String output_text = args[0];
+            String output_text = "";
+            if (args.length == 1)
+            {
+                output_text = args[0];
+            }
+            else
+            {
+            	for (int i = 0; i < args.length; i++)
+            	{
+            		output_text += args[i] + " ";
+            	}
+            }
+            
             pw.println(output_text);
             
             reader = new BufferedReader(new InputStreamReader(in));

@@ -1,19 +1,32 @@
 package src;
 import java.net.*;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.io.*;
 
 class SockServer 
 {
-    static AtomicInteger total = new AtomicInteger(0);   
+    static AtomicIntegerArray total = new AtomicIntegerArray(10);   
     static BufferedReader reader;
     static PrintWriter pw;
+    
+    static int clientID = 0;
+    static int addValue = 0;
     
     static String[] parseInput(InputStream inputStream) throws IOException
     {
         reader = new BufferedReader(new InputStreamReader(inputStream));
         String[] arguments = reader.readLine().split(" ");
+        System.out.println(Arrays.toString(arguments));
+        if (arguments.length == 2)
+        {
+        	clientID = Integer.parseInt(arguments[0]);
+        	addValue = addInput(arguments[1]);
+        }
+        else if (arguments.length == 1)
+        {
+        	addValue = addInput(arguments[0]);
+        }
         return arguments;
     }
     
@@ -29,7 +42,7 @@ class SockServer
     		result = 0;
     		if (input.equals("reset"))
 			{
-    			total.set(0);
+    			total.set(clientID, 0);
     			System.out.println("Total is reset.");
 			}
     		else
@@ -70,11 +83,11 @@ class SockServer
                 System.out.println("Server received " + Arrays.toString(arguments));
                 	
                 //Thread.sleep(1000);
-                total.addAndGet(addInput(arguments[0]));
+                total.addAndGet(clientID, addValue);
             	System.out.println("Total is: " + total);
 
                 pw = new PrintWriter(out, true);
-                pw.println(total.get());
+                pw.println(total.get(clientID));
                 out.flush();
             } 
             catch (Exception e) 
