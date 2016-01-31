@@ -1,11 +1,12 @@
 package src;
 import java.net.*;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.io.*;
 
 class SockServer 
 {
-    static int total = 0;   
+    static AtomicInteger total = new AtomicInteger(0);   
     static BufferedReader reader;
     
     static String[] parseInput(InputStream inputStream) throws IOException
@@ -24,7 +25,17 @@ class SockServer
     	}
     	catch (NumberFormatException e)
     	{
-    		e.printStackTrace();
+    		result = 0;
+    		if (input.equals("reset"))
+			{
+    			System.out.println("Total is reset.");
+    			total.set(0);
+    			System.out.println(total);
+			}
+    		else
+    		{
+    			System.out.println(input + " is not an accepted input.");
+    		}
     	}
     	
     	return result;
@@ -57,10 +68,12 @@ class SockServer
                 String[] arguments = parseInput(in);
                 
                 System.out.println("Server received " + Arrays.toString(arguments));
+                	
                 Thread.sleep(1000);
-                total += addInput(arguments[0]);
+                total.addAndGet(addInput(arguments[0]));
+            	System.out.println("Total is: " + total);
 
-                out.write(total);
+                out.write(total.get());
                 out.flush();
             } 
             catch (Exception e) 
