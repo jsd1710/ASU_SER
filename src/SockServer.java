@@ -7,12 +7,18 @@ import java.io.*;
 
 class SockServer 
 {
-    static ConcurrentHashMap<Integer, Integer> total = new ConcurrentHashMap<Integer, Integer>();   
+    static ConcurrentHashMap<Integer, Integer> clients = new ConcurrentHashMap<Integer, Integer>();   
+    static int sleepTime = 0;
     
     public static void main (String args[]) throws Exception 
     {
         ServerSocket serv = null;
         Socket sock = null;
+        
+        if (args[0] != null)
+        {
+        	sleepTime = Integer.parseInt(args[0]);
+        }
         
         try 
         {
@@ -29,7 +35,7 @@ class SockServer
             try 
             {
                 sock = serv.accept();
-                Calculator calculator = new Calculator(sock, total);
+                Calculator calculator = new Calculator(sock, clients, sleepTime);
                 calculator.run();
                 calculator.close();
                 calculator = null;
@@ -49,7 +55,7 @@ class SockServer
 
 class Calculator implements Runnable
 {
-    static ConcurrentHashMap<Integer, Integer> clients;
+    ConcurrentHashMap<Integer, Integer> clients;
 
 	InputStream in = null;
     OutputStream out = null;
@@ -61,10 +67,11 @@ class Calculator implements Runnable
     int addValue = 0;
     int sleepTime = 0;
     
-    Calculator(Socket socket, ConcurrentHashMap<Integer, Integer> total)
+    Calculator(Socket socket, ConcurrentHashMap<Integer, Integer> clients, int sleepTime)
     {
-    	sock = socket;
-    	clients = total;
+    	this.sock = socket;
+    	this.clients = clients;
+    	this.sleepTime = sleepTime;
     }
     
     public boolean close() throws IOException
@@ -87,12 +94,7 @@ class Calculator implements Runnable
         {
         	addValue = addInput(arguments[0]);
         }
-        else if (arguments.length == 3)
-        {
-        	clientID = Integer.parseInt(arguments[0]);
-        	addValue = addInput(arguments[1]);
-        	sleepTime = Integer.parseInt(arguments[2]);
-        }
+
         return arguments;
     }
     
