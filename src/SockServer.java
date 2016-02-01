@@ -59,6 +59,7 @@ class Calculator implements Runnable
     Socket sock = null;
     int clientID = 0;
     int addValue = 0;
+    int sleepTime = 0;
     
     Calculator(Socket socket, ConcurrentHashMap<Integer, Integer> total)
     {
@@ -85,6 +86,12 @@ class Calculator implements Runnable
         else if (arguments.length == 1)
         {
         	addValue = addInput(arguments[0]);
+        }
+        else if (arguments.length == 3)
+        {
+        	clientID = Integer.parseInt(arguments[0]);
+        	addValue = addInput(arguments[1]);
+        	sleepTime = Integer.parseInt(arguments[2]);
         }
         return arguments;
     }
@@ -130,13 +137,20 @@ class Calculator implements Runnable
 
             int newValue = clients.get(clientID) + addValue;
             clients.put(clientID, newValue);
+            
+            if (sleepTime > 0)
+            {
+            	System.out.println("Sleep for " + sleepTime + " milliseconds...");
+            	Thread.sleep(sleepTime);
+            }
+            
         	System.out.println("Total is: " + clients);
 
             pw = new PrintWriter(out, true);
             pw.println(clients.get(clientID));
             out.flush();
 		} 
-		catch (IOException e) 
+		catch (IOException | InterruptedException e) 
 		{
 			e.printStackTrace();
 		}
